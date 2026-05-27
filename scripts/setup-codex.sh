@@ -8,6 +8,7 @@ if [[ "${ENVIRONMENT}" != "prod" && "${ENVIRONMENT}" != "test" ]]; then
 fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+mkdir -p "$(dirname "${ROOT_DIR}")"
 cd "${ROOT_DIR}"
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
