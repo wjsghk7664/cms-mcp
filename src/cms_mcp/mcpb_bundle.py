@@ -32,7 +32,8 @@ def build_mcpb_manifest(
         "long_description": (
             "Provides read-only access to the internal ad CMS from Claude Desktop. "
             "The extension runs locally, uses the CMS cookies saved on this device, "
-            "and does not create, update, delete, or log out CMS data."
+            "opens a local login browser when the saved session expires, and does "
+            "not create, update, delete, or log out CMS data."
         ),
         "author": {"name": "Cashwalk Ads"},
         "server": {
@@ -53,6 +54,11 @@ def build_mcpb_manifest(
                     "CMS_MCP_AUTH_PROFILE_DIR": _portable_home_path(
                         config.auth_profile_dir
                     ),
+                    "CMS_MCP_AUTO_LOGIN": "true",
+                    "CMS_MCP_AUTO_LOGIN_TIMEOUT_SECONDS": str(
+                        config.auto_login_timeout_seconds
+                    ),
+                    "CMS_MCP_AUTO_LOGIN_HEADLESS": "false",
                     "CMS_MCP_LOG_LEVEL": "WARNING",
                 },
             },

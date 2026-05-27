@@ -151,10 +151,14 @@ Auth implementation flow:
 5. The CLI extracts only the cookies needed for `ad-manager-api.cashwalk.io`.
 6. Cookies are saved to `.cms-mcp/cookies/{env}.json` with owner-only file permissions.
 7. `auth status` probes `/users/me` and `/inventories/projects`.
-8. MCP server startup reads this project's cookie file and performs the same probe.
-9. If the probe fails, tools return `AUTH_REQUIRED` or `AUTH_STALE` and tell the user to run `cms-mcp auth login --env {env}`.
+8. MCP tools read this project's cookie file and perform the same probe before read API calls.
+9. If the probe fails and `CMS_MCP_AUTO_LOGIN=true`, the tool opens the project-owned browser profile, waits for human login, saves fresh cookies, and continues the original read.
+10. If auto-login is disabled or login times out, tools return `AUTH_REQUIRED` and tell the user to run `cms-mcp auth login --env {env}`.
 
-The MCP server process should not trigger OAuth or open browsers during tool execution. Login and refresh are explicit local CLI actions, not LLM-callable MCP tools.
+The MCP server process can trigger the same local browser login guard during
+tool execution, but only as an auth repair step before read-only API calls.
+Login and refresh are still available as explicit local CLI actions and are not
+exposed as separate LLM-callable MCP tools.
 
 `ads-ai` remains useful only as a reference implementation for endpoint behavior and prior auth lessons. It is not a runtime dependency.
 

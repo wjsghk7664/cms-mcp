@@ -30,6 +30,9 @@ class CmsMcpConfig:
     timeout_seconds: float = 30.0
     allow_post_reads: bool = True
     log_level: str = "INFO"
+    auto_login: bool = True
+    auto_login_timeout_seconds: int = 300
+    auto_login_headless: bool = False
 
 
 def normalize_env(raw_env: str | None) -> CmsEnv:
@@ -67,4 +70,16 @@ def load_config(env: str | None = None) -> CmsMcpConfig:
         allow_post_reads=os.environ.get("CMS_MCP_ALLOW_POST_READS", "true").lower()
         not in {"0", "false", "no"},
         log_level=os.environ.get("CMS_MCP_LOG_LEVEL", "INFO"),
+        auto_login=_env_bool("CMS_MCP_AUTO_LOGIN", default=True),
+        auto_login_timeout_seconds=int(
+            os.environ.get("CMS_MCP_AUTO_LOGIN_TIMEOUT_SECONDS", "300")
+        ),
+        auto_login_headless=_env_bool("CMS_MCP_AUTO_LOGIN_HEADLESS", default=False),
     )
+
+
+def _env_bool(name: str, *, default: bool) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}

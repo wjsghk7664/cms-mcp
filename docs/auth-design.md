@@ -6,12 +6,16 @@ This project must not depend on `ads-ai` runtime state. `ads-ai` can inform impl
 
 ## Principle
 
-MCP tools are read-only. Auth setup is client-side and is not exposed as an MCP tool.
+MCP tools are read-only. Auth setup is client-side and is not exposed as a
+standalone MCP tool.
 
 That means:
 
 - LLM-callable tools can read CMS data.
-- LLM-callable tools cannot start Google OAuth.
+- LLM-callable read tools first validate the saved CMS session.
+- If the saved session is missing or expired, read tools can open the local
+  project-owned login browser, wait for human Google OAuth completion, save
+  fresh cookies, and then continue the original read.
 - LLM-callable tools cannot export cookies.
 - LLM-callable tools cannot logout of CMS.
 - A human-operated local auth client handles browser login, cookie storage, status checks, refresh, and local cleanup.
@@ -33,6 +37,8 @@ cms-mcp serve
   |
   +-- CookieStore: reads saved cookies
   |
+  +-- AuthGuard: validates cookies and opens local login on expiry
+  |
   +-- CmsClient: attaches cookies to read-only API calls
   |
   +-- ReadOnlyGuard: blocks mutation methods and action endpoints
@@ -47,7 +53,7 @@ Responsibilities:
 | --- | --- | --- |
 | Auth client | browser login, cookie extraction, cookie refresh, local cookie deletion | CMS data tools |
 | Cookie store | local session file format, permissions, redaction | password or OAuth secret storage |
-| MCP server | read-only tool registration, saved-cookie API calls | opening browsers, starting OAuth, exporting cookies |
+| MCP server | read-only tool registration, saved-cookie API calls, automatic local login guard on expired sessions | exporting cookies, logging out, mutating CMS data |
 | HTTP client | read-only request execution, retries, errors | direct mutation calls |
 
 This keeps the project self-sufficient while keeping the LLM-callable MCP surface read-only.
@@ -70,11 +76,13 @@ cms-mcp serve --env prod
 Expired session:
 
 ```bash
-cms-mcp auth login --env prod
-cms-mcp auth status --env prod
+cms-mcp serve --env prod
 ```
 
-The same command can refresh an existing browser profile. If the profile is still logged in, it should export fresh cookies without requiring a full login. If the CMS session has expired, the browser prompts the user to log in again.
+During MCP use, the first read tool checks the saved session. If the session is
+missing or expired, the same project-owned browser profile opens and prompts the
+user to log in again. Set `CMS_MCP_AUTO_LOGIN=false` to return `AUTH_REQUIRED`
+instead of opening the browser.
 
 Optional local cleanup:
 

@@ -29,7 +29,7 @@ async def auth_status(
         result["remediation"] = f"Run `cms-mcp auth login --env {config.env}`"
         return result
 
-    client = CmsClient(config, cookie_store=store, transport=transport)
+    client = CmsClient(config, cookie_store=store, transport=transport, auto_auth=False)
     try:
         probe = await client.probe()
     except CmsMcpError as exc:
@@ -45,4 +45,3 @@ async def auth_status(
         "source": probe["source"],
     }
     return result
-

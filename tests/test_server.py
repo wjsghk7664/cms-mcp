@@ -45,6 +45,7 @@ async def test_health_tool_handles_missing_cookie(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setenv("CMS_MCP_COOKIE_FILE", str(tmp_path / "missing.json"))
+    monkeypatch.setenv("CMS_MCP_AUTO_LOGIN", "false")
     _content, structured = await mcp.call_tool("cms_health", {"env": "prod"})
 
     assert structured["ok"] is False

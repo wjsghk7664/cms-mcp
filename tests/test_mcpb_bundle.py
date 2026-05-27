@@ -46,5 +46,6 @@ def test_build_mcpb_manifest_uses_uv_and_local_auth_paths(
     assert manifest["server"]["mcp_config"]["env"]["CMS_MCP_COOKIE_FILE"] == (
         "${HOME}/workspace/cms-mcp/.cms-mcp/cookies/prod.json"
     )
+    assert manifest["server"]["mcp_config"]["env"]["CMS_MCP_AUTO_LOGIN"] == "true"
     assert "user_config" not in manifest
     assert manifest["tools"] == [{"name": "cms_health", "description": "Check health"}]

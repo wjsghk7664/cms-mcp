@@ -61,6 +61,14 @@ cms-mcp smoke --env prod --target catalog --ads-file-id <id>
 cms-mcp serve --env prod
 ```
 
+By default, MCP read tools preflight the saved CMS session. If the session is
+missing or expired, a local login browser opens, the tool waits for login to
+complete, and then the original read continues. To turn that behavior off:
+
+```bash
+CMS_MCP_AUTO_LOGIN=false cms-mcp serve --env prod
+```
+
 The server uses stdio. stdout is reserved for MCP JSON-RPC messages; operational output should stay out of stdout.
 
 ## MCP Client Command

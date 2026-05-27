@@ -19,10 +19,14 @@ class CmsClient:
         *,
         cookie_store: CookieStore | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
+        auto_auth: bool | None = None,
     ) -> None:
         self.config = config
         self.cookie_store = cookie_store or CookieStore(config)
         self.transport = transport
+        self.auto_auth = (
+            config.auto_login if auto_auth is None and transport is None else bool(auto_auth)
+        )
 
     async def request_json(
         self,
@@ -36,6 +40,10 @@ class CmsClient:
         assert_readonly(method, path, self.config.allow_post_reads)
         normalized_method = method.upper()
         normalized_path = normalize_path(path)
+        if self.auto_auth:
+            from .auth_guard import ensure_authenticated
+
+            await ensure_authenticated(self.config)
         cookies = self.cookie_store.load_cookies()
         url = urljoin(self.config.api_base + "/", normalized_path.lstrip("/"))
 

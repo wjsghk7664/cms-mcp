@@ -76,7 +76,9 @@ mcp = FastMCP(
     "Internal CMS Read-Only",
     instructions=(
         "Read-only tools for the internal ad CMS. "
-        "This server never creates, updates, deletes, logs out, or starts OAuth."
+        "This server never creates, updates, deletes, or logs out. "
+        "If the saved session is expired, it can open the local CMS login browser "
+        "before continuing a read."
     ),
 )
 

@@ -29,7 +29,17 @@ Claude Desktop will show an extension install dialog. Approve it, then enable
 
 ## Auth
 
-Auth is client-managed. The MCP tools do not open browsers, export cookies, or call logout.
+Auth is client-managed. MCP tools remain read-only, but by default they verify
+the saved CMS session before read API calls. If the session is missing or
+expired, the server opens the project-owned login browser, waits for you to
+complete CMS Google login, saves fresh cookies, and then continues the original
+read. MCP tools never export cookies or call logout.
+
+Disable automatic login prompts with:
+
+```bash
+CMS_MCP_AUTO_LOGIN=false cms-mcp serve --env prod
+```
 
 ```bash
 cms-mcp auth login --env prod

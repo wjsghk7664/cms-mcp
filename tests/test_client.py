@@ -56,6 +56,38 @@ async def test_client_get_returns_redacted_json(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
+async def test_client_auto_auth_runs_before_request(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = make_config(tmp_path)
+    save_cookie(config)
+    calls: list[str] = []
+
+    async def fake_ensure_authenticated(auth_config: CmsMcpConfig) -> dict[str, object]:
+        calls.append(auth_config.env)
+        return {"ok": True}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"ok": True})
+
+    monkeypatch.setattr(
+        "cms_mcp.auth_guard.ensure_authenticated",
+        fake_ensure_authenticated,
+    )
+
+    client = CmsClient(
+        config,
+        transport=httpx.MockTransport(handler),
+        auto_auth=True,
+    )
+    result = await client.get("/users/me")
+
+    assert result["ok"] is True
+    assert calls == ["prod"]
+
+
+@pytest.mark.asyncio
 async def test_client_blocks_patch_before_network(tmp_path: Path) -> None:
     config = make_config(tmp_path)
     client = CmsClient(config)
@@ -100,4 +132,3 @@ async def test_client_rejects_non_json_response(tmp_path: Path) -> None:
 
 def test_test_module_uses_json_import_to_keep_lint_honest() -> None:
     assert json.loads("{}") == {}
-
