@@ -75,6 +75,16 @@ Use this command in MCP client configuration:
 }
 ```
 
+## Claude Desktop
+
+Install or refresh the Claude Desktop MCP config from this project directory:
+
+```bash
+cms-mcp claude-config --env prod --install
+```
+
+Then restart Claude Desktop.
+
 ## Read-Only Guarantees
 
 Blocked by tests and runtime guard:

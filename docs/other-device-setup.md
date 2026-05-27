@@ -1,6 +1,6 @@
 # Other Device Setup
 
-Use this when you want the same CMS MCP server in Codex on another Mac.
+Use this when you want the same CMS MCP server in Codex and Claude Desktop on another Mac.
 
 Do not copy `.cms-mcp/cookies/*.json` or browser profiles between devices. Each device should complete its own CMS login.
 
@@ -12,9 +12,9 @@ On another Mac, run:
 mkdir -p ~/workspace && git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp && ./scripts/setup-codex.sh prod
 ```
 
-That one command clones the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs the Codex MCP config.
+That one command clones the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs both Codex and Claude Desktop MCP configs.
 
-Then restart Codex or open a new Codex session.
+Then restart Codex and Claude Desktop, or open a new session.
 
 ## Manual Steps
 
@@ -53,29 +53,37 @@ The cookie file will be created under that device's project directory:
 .cms-mcp/cookies/prod.json
 ```
 
-## 4. Install Codex MCP Config
+## 4. Install MCP Configs
 
 Run this from the project directory on the other device:
 
 ```bash
 cms-mcp codex-config --env prod --install
+cms-mcp claude-config --env prod --install
 ```
 
-This writes or replaces the `[mcp_servers.cms_mcp]` block in:
+The first command writes or replaces the `[mcp_servers.cms_mcp]` block in:
 
 ```text
 ~/.codex/config.toml
+```
+
+The second command writes or replaces the `mcpServers.cms_mcp` entry in:
+
+```text
+~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
 To preview the block before writing it:
 
 ```bash
 cms-mcp codex-config --env prod
+cms-mcp claude-config --env prod
 ```
 
-## 5. Restart Codex
+## 5. Restart Apps
 
-Restart Codex or open a new Codex session. Then ask:
+Restart Codex and Claude Desktop. Then ask:
 
 ```text
 cms_mcp로 cms_health 확인해줘

@@ -9,6 +9,7 @@ from typing import Any
 
 from .auth import auth_status
 from .browser_auth import browser_login
+from .claude_config import install_claude_config, render_claude_config_payload
 from .codex_config import install_codex_config_block, render_codex_config_block
 from .config import load_config
 from .cookie_store import CookieStore
@@ -38,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
             return asyncio.run(run_tools_command())
         if args.command == "codex-config":
             return run_codex_config_command(args)
+        if args.command == "claude-config":
+            return run_claude_config_command(args)
     except CmsMcpError as exc:
         print_json(exc.to_tool_result())
         return 1
@@ -80,6 +83,25 @@ def build_parser() -> argparse.ArgumentParser:
         default=str(Path.home() / ".codex" / "config.toml"),
     )
     codex_config.add_argument("--install", action="store_true")
+
+    claude_config = subparsers.add_parser(
+        "claude-config",
+        help="Print or install a Claude Desktop MCP config entry",
+    )
+    claude_config.add_argument("--env", choices=["prod", "test"], default=None)
+    claude_config.add_argument("--server-name", default="cms_mcp")
+    claude_config.add_argument("--command", dest="server_command", default=None)
+    claude_config.add_argument(
+        "--config-path",
+        default=str(
+            Path.home()
+            / "Library"
+            / "Application Support"
+            / "Claude"
+            / "claude_desktop_config.json"
+        ),
+    )
+    claude_config.add_argument("--install", action="store_true")
 
     auth = subparsers.add_parser("auth", help="Manage local CMS auth state")
     auth_sub = auth.add_subparsers(dest="auth_command", required=True)
@@ -179,6 +201,27 @@ def run_codex_config_command(args: argparse.Namespace) -> int:
         print_json({**result, "block": block})
     else:
         print(block, file=sys.stdout)
+    return 0
+
+
+def run_claude_config_command(args: argparse.Namespace) -> int:
+    config = load_config(getattr(args, "env", None))
+    if args.install:
+        result = install_claude_config(
+            Path(args.config_path),
+            config,
+            server_name=args.server_name,
+            command=args.server_command,
+        )
+        print_json(result)
+    else:
+        print_json(
+            render_claude_config_payload(
+                config,
+                server_name=args.server_name,
+                command=args.server_command,
+            )
+        )
     return 0
 
 
