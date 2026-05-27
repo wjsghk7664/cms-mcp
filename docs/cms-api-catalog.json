@@ -1,0 +1,479 @@
+{
+  "generated_at": "2026-05-27",
+  "sources": [
+    "live_cms_ui",
+    "deployed_nextjs_frontend_bundle",
+    "ads_ai_source"
+  ],
+  "caveats": [
+    "Direct browser API probes to https://ad-manager-api.cashwalk.io were blocked by the client environment.",
+    "Local saved cookies were unavailable or stale for most ads-ai CMS client probes.",
+    "Response schemas and some methods should be confirmed with authenticated API traffic capture before write tools are implemented."
+  ],
+  "environments": {
+    "prod": {
+      "cms_frontend": "https://ad-cms.cashwalk.io",
+      "api_base": "https://ad-manager-api.cashwalk.io"
+    },
+    "test": {
+      "cms_frontend": "https://test-ad-cms.cashwalk.io",
+      "api_base": "https://test-ad-manager-api.cashwalk.io"
+    }
+  },
+  "endpoints": [
+    {
+      "group": "auth",
+      "method": "GET",
+      "path": "/users/me",
+      "status": "confirmed_bundle",
+      "purpose": "Current user and session probe"
+    },
+    {
+      "group": "auth",
+      "method": "GET",
+      "path": "/users",
+      "status": "confirmed_live_requires_approval_status",
+      "purpose": "User list by approval status",
+      "suggested_tools": ["cms_list_users"]
+    },
+    {
+      "group": "auth",
+      "method": "GET_OR_PATCH",
+      "path": "/users/default-settings",
+      "status": "confirmed_live_get",
+      "purpose": "Current user's default settings",
+      "suggested_tools": ["cms_get_user_default_settings"]
+    },
+    {
+      "group": "auth",
+      "method": "GET_OR_PATCH",
+      "path": "/users/first-login",
+      "status": "confirmed_bundle_get_prod_500",
+      "purpose": "First-login state; not exposed as MCP until GET behavior is confirmed"
+    },
+    {
+      "group": "auth",
+      "method": "POST",
+      "path": "/auth/logout",
+      "status": "confirmed_bundle",
+      "purpose": "Logout"
+    },
+    {
+      "group": "auth",
+      "method": "GET",
+      "path": "/auth/google?return_to={returnTo}",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Google OAuth entrypoint"
+    },
+    {
+      "group": "reports",
+      "method": "GET",
+      "path": "/cms/revenues",
+      "status": "confirmed_bundle_and_ui",
+      "purpose": "Total sales report and CSV export",
+      "ui_routes": ["/report/sales"],
+      "suggested_tools": ["cms_report_sales", "cms_export_sales_csv"]
+    },
+    {
+      "group": "reports",
+      "method": "GET",
+      "path": "/cms/stats",
+      "status": "confirmed_bundle_and_ui",
+      "purpose": "Stats root report, including ad-network report",
+      "ui_routes": ["/report/period", "/report/adnetworks"],
+      "suggested_tools": ["cms_report_period", "cms_report_adnetworks"]
+    },
+    {
+      "group": "reports",
+      "method": "GET",
+      "path": "/cms/stats/ssp",
+      "status": "confirmed_bundle",
+      "purpose": "SSP drill-down report",
+      "ui_routes": ["/report/adnetworks/ssp/{id}"],
+      "suggested_tools": ["cms_report_adnetwork_ssp"]
+    },
+    {
+      "group": "reports",
+      "method": "GET",
+      "path": "/cms/stats/ad-network-unit",
+      "status": "confirmed_bundle",
+      "purpose": "Ad-network unit drill-down report",
+      "suggested_tools": ["cms_report_adnetwork_unit"]
+    },
+    {
+      "group": "reports",
+      "method": "GET",
+      "path": "/cms/stats/media-unit",
+      "status": "confirmed_bundle",
+      "purpose": "Media unit drill-down report",
+      "suggested_tools": ["cms_report_media_unit"]
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/business-categories",
+      "status": "confirmed_bundle",
+      "purpose": "Project or business category filter",
+      "suggested_tools": ["cms_report_metadata"]
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/positions",
+      "status": "confirmed_bundle",
+      "purpose": "Position or area filter",
+      "suggested_tools": ["cms_report_metadata"]
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/publishers",
+      "status": "confirmed_bundle",
+      "purpose": "Publisher or app filter",
+      "suggested_tools": ["cms_report_metadata"]
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/reports/kpi",
+      "status": "confirmed_live",
+      "purpose": "KPI or period report",
+      "suggested_tools": ["cms_report_kpi", "cms_report_period", "cms_export_period_csv"]
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/stats/columns",
+      "status": "confirmed_bundle",
+      "purpose": "Available report columns"
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET",
+      "path": "/cms/stats/column-presets",
+      "status": "confirmed_bundle",
+      "purpose": "Recommended report column presets"
+    },
+    {
+      "group": "reports_metadata",
+      "method": "GET_OR_PATCH",
+      "path": "/cms/stats/column-settings/me",
+      "status": "confirmed_bundle_method_unconfirmed",
+      "purpose": "Current user's report column settings",
+      "suggested_tools": ["cms_report_columns"]
+    },
+    {
+      "group": "inventories",
+      "method": "GET",
+      "path": "/inventories",
+      "status": "confirmed_bundle_ui_and_ads_ai",
+      "purpose": "List inventories with filters and pagination",
+      "ui_routes": ["/operations/inventory"],
+      "suggested_tools": ["cms_list_inventories", "cms_find_inventory"]
+    },
+    {
+      "group": "inventories",
+      "method": "POST",
+      "path": "/inventories",
+      "status": "inferred_provider",
+      "purpose": "Create inventory"
+    },
+    {
+      "group": "inventories",
+      "method": "GET",
+      "path": "/inventories/{id}",
+      "status": "inferred_provider",
+      "purpose": "Get inventory detail",
+      "suggested_tools": ["cms_get_inventory"]
+    },
+    {
+      "group": "inventories",
+      "method": "PATCH",
+      "path": "/inventories/{id}",
+      "status": "inferred_provider",
+      "purpose": "Update inventory"
+    },
+    {
+      "group": "inventories",
+      "method": "DELETE",
+      "path": "/inventories/{id}",
+      "status": "inferred_provider",
+      "purpose": "Delete inventory"
+    },
+    {
+      "group": "inventories",
+      "method": "GET",
+      "path": "/inventories/{id}/histories",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Inventory history",
+      "suggested_tools": ["cms_get_inventory_history"]
+    },
+    {
+      "group": "inventories",
+      "method": "GET",
+      "path": "/inventories/{id}/units",
+      "status": "confirmed_bundle_and_ui",
+      "purpose": "Units under an inventory",
+      "ui_routes": ["/operations/inventory/{id}/units"],
+      "suggested_tools": ["cms_list_inventory_units"]
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/projects",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Project dimension and auth probe"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/apps",
+      "status": "confirmed_bundle",
+      "purpose": "App dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/publishers",
+      "status": "confirmed_bundle",
+      "purpose": "Publisher dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/platforms",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Platform dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/screens",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Screen dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/locations",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "Location dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/tenants",
+      "status": "confirmed_bundle",
+      "purpose": "Tenant dimension"
+    },
+    {
+      "group": "inventories_metadata",
+      "method": "GET",
+      "path": "/inventories/os",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "OS dimension"
+    },
+    {
+      "group": "units",
+      "method": "GET",
+      "path": "/units",
+      "status": "confirmed_live_supplier_required",
+      "purpose": "Supplier-specific unit collection",
+      "suggested_tools": ["cms_list_units_by_supplier"]
+    },
+    {
+      "group": "units",
+      "method": "GET",
+      "path": "/units/list",
+      "status": "confirmed_live",
+      "purpose": "Paginated unit list",
+      "suggested_tools": ["cms_list_units"]
+    },
+    {
+      "group": "units",
+      "method": "POST",
+      "path": "/units/search",
+      "status": "confirmed_bundle_and_ui",
+      "purpose": "Unit search and export",
+      "ui_routes": ["/operations/unit-info"],
+      "suggested_tools": ["cms_search_units", "cms_export_units_csv"]
+    },
+    {
+      "group": "units",
+      "method": "GET",
+      "path": "/units/{id}",
+      "status": "confirmed_live",
+      "purpose": "Get unit detail",
+      "suggested_tools": ["cms_get_unit"]
+    },
+    {
+      "group": "units",
+      "method": "PATCH",
+      "path": "/units/{id}",
+      "status": "inferred_provider",
+      "purpose": "Update unit"
+    },
+    {
+      "group": "units",
+      "method": "DELETE",
+      "path": "/units/{id}",
+      "status": "inferred_provider",
+      "purpose": "Delete unit"
+    },
+    {
+      "group": "units",
+      "method": "GET",
+      "path": "/units/{id}/histories",
+      "status": "confirmed_bundle",
+      "purpose": "Unit history",
+      "suggested_tools": ["cms_get_unit_history"]
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET_OR_PATCH",
+      "path": "/units/visibility",
+      "status": "confirmed_bundle_get_prod_400_without_numeric_context",
+      "purpose": "Unit visibility or reporting flag; not exposed as MCP until query context is confirmed"
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET",
+      "path": "/units/ssps",
+      "status": "confirmed_bundle_and_ads_ai",
+      "purpose": "SSP master data"
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET",
+      "path": "/units/formats",
+      "status": "confirmed_bundle",
+      "purpose": "Unit format master data"
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET",
+      "path": "/units/sizes",
+      "status": "confirmed_bundle",
+      "purpose": "Unit size master data"
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET",
+      "path": "/units/legacy/currency",
+      "status": "confirmed_live",
+      "purpose": "Legacy currency metadata",
+      "suggested_tools": ["cms_dimensions"]
+    },
+    {
+      "group": "units_metadata",
+      "method": "GET",
+      "path": "/units/countries",
+      "status": "confirmed_bundle",
+      "purpose": "Country metadata"
+    },
+    {
+      "group": "mediation",
+      "method": "GET_OR_PATCH",
+      "path": "/mediation/inventories/{id}/settings",
+      "status": "confirmed_live_for_mediation_inventory",
+      "purpose": "Mediation settings",
+      "suggested_tools": ["cms_mediation_settings"]
+    },
+    {
+      "group": "mediation",
+      "method": "GET",
+      "path": "/cms/inventories/{id}/mediation-requests",
+      "status": "confirmed_bundle",
+      "purpose": "Mediation requests for inventory",
+      "suggested_tools": ["cms_mediation_requests"]
+    },
+    {
+      "group": "mediation",
+      "method": "GET",
+      "path": "/mediation/inventories/{id}/groups",
+      "status": "confirmed_ads_ai",
+      "purpose": "Mediation groups for inventory",
+      "suggested_tools": ["cms_inventory_groups"]
+    },
+    {
+      "group": "mediation",
+      "method": "GET",
+      "path": "/mediation/sdk-init-configs?project={project}&os={os}",
+      "status": "confirmed_ads_ai",
+      "purpose": "SDK init config by project and OS",
+      "suggested_tools": ["cms_sdk_init_configs"]
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET",
+      "path": "/ads-files",
+      "status": "confirmed_bundle",
+      "purpose": "List ads.txt or app-ads.txt files",
+      "ui_routes": [
+        "/operations/ads-txt-management/app-ads-txt",
+        "/operations/ads-txt-management/ads-txt"
+      ],
+      "suggested_tools": ["cms_list_ads_files"]
+    },
+    {
+      "group": "ads_txt",
+      "method": "POST",
+      "path": "/ads-files",
+      "status": "inferred_provider",
+      "purpose": "Create ads file record"
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET",
+      "path": "/ads-files/{id}",
+      "status": "confirmed_bundle",
+      "purpose": "Get ads file detail",
+      "suggested_tools": ["cms_get_ads_file"]
+    },
+    {
+      "group": "ads_txt",
+      "method": "PATCH",
+      "path": "/ads-files/{id}",
+      "status": "inferred_provider",
+      "purpose": "Update ads file record"
+    },
+    {
+      "group": "ads_txt",
+      "method": "DELETE",
+      "path": "/ads-files/{id}",
+      "status": "inferred_provider",
+      "purpose": "Delete ads file record"
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET_OR_POST",
+      "path": "/ads-files/{id}/callback",
+      "status": "confirmed_bundle_method_unconfirmed",
+      "purpose": "Ads file callback action"
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET",
+      "path": "/ads-files/{id}/status",
+      "status": "confirmed_bundle",
+      "purpose": "Ads file status check",
+      "suggested_tools": ["cms_check_ads_file_status"]
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET",
+      "path": "/ads-files/{id}/url",
+      "status": "confirmed_bundle_prod_404_fallback_to_detail",
+      "purpose": "Ads file URL",
+      "suggested_tools": ["cms_get_ads_file_url"]
+    },
+    {
+      "group": "ads_txt",
+      "method": "GET",
+      "path": "/ads-files/{id}/histories",
+      "status": "confirmed_bundle",
+      "purpose": "Ads file history",
+      "suggested_tools": ["cms_get_ads_file_history"]
+    }
+  ]
+}
