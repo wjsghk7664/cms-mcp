@@ -14,7 +14,7 @@ python -m playwright install chromium
 On a fresh Codex or Claude Desktop device, the one-command setup is:
 
 ```bash
-mkdir -p ~/workspace && git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp && ./scripts/setup-codex.sh prod
+mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
 ## Auth

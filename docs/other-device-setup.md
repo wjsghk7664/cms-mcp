@@ -9,10 +9,10 @@ Do not copy `.cms-mcp/cookies/*.json` or browser profiles between devices. Each 
 On another Mac, run:
 
 ```bash
-mkdir -p ~/workspace && git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp && ./scripts/setup-codex.sh prod
+mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
-That one command clones the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs both Codex and Claude Desktop MCP configs.
+That one command clones or updates the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs both Codex and Claude Desktop MCP configs.
 
 Then restart Codex and Claude Desktop, or open a new session.
 
