@@ -80,7 +80,7 @@ Use this command in MCP client configuration:
 Install or refresh the Claude Desktop MCP config from this project directory:
 
 ```bash
-cms-mcp claude-config --env prod --install
+cms-mcp claude-config --env prod --install --all-known
 ```
 
 Then restart Claude Desktop.

@@ -43,3 +43,29 @@ def test_claude_config_command_prints_config_payload(capsys, monkeypatch, tmp_pa
     assert server["env"]["CMS_MCP_COOKIE_FILE"] == str(
         tmp_path / ".cms-mcp" / "cookies" / "prod.json"
     )
+
+
+def test_claude_config_command_installs_all_known_paths(
+    capsys,
+    monkeypatch,
+    tmp_path,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
+    variant_dir = tmp_path / "Library" / "Application Support" / "Claude-3p"
+    variant_dir.mkdir(parents=True)
+
+    assert main(["claude-config", "--env", "prod", "--install", "--all-known"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["ok"] is True
+    assert payload["paths"] == [
+        str(
+            tmp_path
+            / "Library"
+            / "Application Support"
+            / "Claude"
+            / "claude_desktop_config.json"
+        ),
+        str(variant_dir / "claude_desktop_config.json"),
+    ]

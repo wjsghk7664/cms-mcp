@@ -59,7 +59,7 @@ Run this from the project directory on the other device:
 
 ```bash
 cms-mcp codex-config --env prod --install
-cms-mcp claude-config --env prod --install
+cms-mcp claude-config --env prod --install --all-known
 ```
 
 The first command writes or replaces the `[mcp_servers.cms_mcp]` block in:
@@ -68,7 +68,9 @@ The first command writes or replaces the `[mcp_servers.cms_mcp]` block in:
 ~/.codex/config.toml
 ```
 
-The second command writes or replaces the `mcpServers.cms_mcp` entry in:
+The second command writes or replaces the `mcpServers.cms_mcp` entry in the
+default Claude Desktop config and any existing known Claude variant config.
+The default path is:
 
 ```text
 ~/Library/Application Support/Claude/claude_desktop_config.json

@@ -9,7 +9,12 @@ from typing import Any
 
 from .auth import auth_status
 from .browser_auth import browser_login
-from .claude_config import install_claude_config, render_claude_config_payload
+from .claude_config import (
+    default_claude_config_path,
+    install_claude_config,
+    install_known_claude_configs,
+    render_claude_config_payload,
+)
 from .codex_config import install_codex_config_block, render_codex_config_block
 from .config import load_config
 from .cookie_store import CookieStore
@@ -93,13 +98,12 @@ def build_parser() -> argparse.ArgumentParser:
     claude_config.add_argument("--command", dest="server_command", default=None)
     claude_config.add_argument(
         "--config-path",
-        default=str(
-            Path.home()
-            / "Library"
-            / "Application Support"
-            / "Claude"
-            / "claude_desktop_config.json"
-        ),
+        default=str(default_claude_config_path()),
+    )
+    claude_config.add_argument(
+        "--all-known",
+        action="store_true",
+        help="Install into the default Claude config and existing known Claude variants",
     )
     claude_config.add_argument("--install", action="store_true")
 
@@ -207,12 +211,20 @@ def run_codex_config_command(args: argparse.Namespace) -> int:
 def run_claude_config_command(args: argparse.Namespace) -> int:
     config = load_config(getattr(args, "env", None))
     if args.install:
-        result = install_claude_config(
-            Path(args.config_path),
-            config,
-            server_name=args.server_name,
-            command=args.server_command,
-        )
+        if args.all_known:
+            result = install_known_claude_configs(
+                config,
+                primary_path=Path(args.config_path),
+                server_name=args.server_name,
+                command=args.server_command,
+            )
+        else:
+            result = install_claude_config(
+                Path(args.config_path),
+                config,
+                server_name=args.server_name,
+                command=args.server_command,
+            )
         print_json(result)
     else:
         print_json(

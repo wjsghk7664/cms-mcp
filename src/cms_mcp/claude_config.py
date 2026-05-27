@@ -10,6 +10,27 @@ from .config import CmsMcpConfig
 from .errors import CmsMcpError, ErrorCode
 
 SERVER_NAME_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+CLAUDE_APP_SUPPORT_DIRS = ("Claude", "Claude-3p")
+
+
+def default_claude_config_path() -> Path:
+    return (
+        Path.home()
+        / "Library"
+        / "Application Support"
+        / "Claude"
+        / "claude_desktop_config.json"
+    )
+
+
+def known_claude_config_paths(*, primary_path: Path | None = None) -> list[Path]:
+    candidates = [primary_path or default_claude_config_path()]
+    app_support = Path.home() / "Library" / "Application Support"
+    for dirname in CLAUDE_APP_SUPPORT_DIRS:
+        config_path = app_support / dirname / "claude_desktop_config.json"
+        if config_path.parent.exists():
+            candidates.append(config_path)
+    return _dedupe_paths(candidates)
 
 
 def build_claude_server_config(
@@ -70,6 +91,30 @@ def install_claude_config(
     }
 
 
+def install_known_claude_configs(
+    config: CmsMcpConfig,
+    *,
+    primary_path: Path | None = None,
+    server_name: str = "cms_mcp",
+    command: str | None = None,
+) -> dict[str, Any]:
+    results = [
+        install_claude_config(
+            config_path,
+            config,
+            server_name=server_name,
+            command=command,
+        )
+        for config_path in known_claude_config_paths(primary_path=primary_path)
+    ]
+    return {
+        "ok": True,
+        "server_name": server_name,
+        "paths": [result["path"] for result in results],
+        "results": results,
+    }
+
+
 def _read_json_config(config_path: Path) -> dict[str, Any]:
     if not config_path.exists():
         return {}
@@ -97,3 +142,15 @@ def _validate_server_name(server_name: str) -> None:
             message="Claude MCP server name must contain only letters, numbers, underscores, and hyphens",
             details={"server_name": server_name},
         )
+
+
+def _dedupe_paths(paths: list[Path]) -> list[Path]:
+    seen: set[str] = set()
+    deduped: list[Path] = []
+    for path in paths:
+        key = str(path.expanduser().resolve(strict=False))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(path)
+    return deduped

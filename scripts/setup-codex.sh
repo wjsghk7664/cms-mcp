@@ -41,6 +41,6 @@ echo "[cms-mcp] installing Codex MCP config"
 cms-mcp codex-config --env "${ENVIRONMENT}" --install
 
 echo "[cms-mcp] installing Claude Desktop MCP config"
-cms-mcp claude-config --env "${ENVIRONMENT}" --install
+cms-mcp claude-config --env "${ENVIRONMENT}" --install --all-known
 
 echo "[cms-mcp] done. Restart Codex and Claude Desktop, or open a new session."

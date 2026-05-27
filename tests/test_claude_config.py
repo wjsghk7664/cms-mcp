@@ -3,7 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from cms_mcp.claude_config import install_claude_config, render_claude_config_payload
+from cms_mcp.claude_config import (
+    install_claude_config,
+    install_known_claude_configs,
+    known_claude_config_paths,
+    render_claude_config_payload,
+)
 from cms_mcp.config import CmsMcpConfig
 
 
@@ -62,3 +67,59 @@ def test_install_claude_config_preserves_existing_json(tmp_path: Path) -> None:
     assert updated["preferences"] == {"sidebarMode": "epitaxy"}
     assert updated["mcpServers"]["other"]["command"] == "/tmp/other"
     assert updated["mcpServers"]["cms_mcp"]["command"] == "/tmp/new/bin/cms-mcp"
+
+
+def test_known_claude_config_paths_include_existing_variant(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    app_support = tmp_path / "Library" / "Application Support"
+    (app_support / "Claude-3p").mkdir(parents=True)
+
+    paths = known_claude_config_paths()
+
+    assert paths == [
+        app_support / "Claude" / "claude_desktop_config.json",
+        app_support / "Claude-3p" / "claude_desktop_config.json",
+    ]
+
+
+def test_install_known_claude_configs_updates_existing_variant(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    app_support = tmp_path / "Library" / "Application Support"
+    variant_config_path = app_support / "Claude-3p" / "claude_desktop_config.json"
+    variant_config_path.parent.mkdir(parents=True)
+    variant_config_path.write_text(
+        json.dumps({"enterpriseConfig": {"enabled": True}}),
+        encoding="utf-8",
+    )
+
+    result = install_known_claude_configs(
+        make_config(tmp_path),
+        command="/tmp/cms-mcp/.venv/bin/cms-mcp",
+    )
+    default_config = json.loads(
+        (app_support / "Claude" / "claude_desktop_config.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    variant_config = json.loads(variant_config_path.read_text(encoding="utf-8"))
+
+    assert result["ok"] is True
+    assert result["paths"] == [
+        str(app_support / "Claude" / "claude_desktop_config.json"),
+        str(variant_config_path),
+    ]
+    assert (
+        default_config["mcpServers"]["cms_mcp"]["command"]
+        == "/tmp/cms-mcp/.venv/bin/cms-mcp"
+    )
+    assert variant_config["enterpriseConfig"] == {"enabled": True}
+    assert (
+        variant_config["mcpServers"]["cms_mcp"]["command"]
+        == "/tmp/cms-mcp/.venv/bin/cms-mcp"
+    )
