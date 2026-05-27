@@ -77,7 +77,17 @@ Use this command in MCP client configuration:
 
 ## Claude Desktop
 
-Install or refresh the Claude Desktop MCP config from this project directory:
+Claude Desktop's current local-server flow is a desktop extension (`.mcpb`).
+Build and open it from this project directory:
+
+```bash
+./scripts/install-claude-desktop-mcpb.sh prod
+```
+
+Approve the install dialog in Claude Desktop, then enable `Cashwalk CMS MCP`
+from the chat connector menu.
+
+Fallback for older Claude Desktop builds:
 
 ```bash
 cms-mcp claude-config --env prod --install --all-known

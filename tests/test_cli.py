@@ -69,3 +69,15 @@ def test_claude_config_command_installs_all_known_paths(
         ),
         str(variant_dir / "claude_desktop_config.json"),
     ]
+
+
+def test_mcpb_manifest_command_prints_manifest(capsys, monkeypatch, tmp_path) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["mcpb-manifest", "--env", "prod"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["name"] == "cms-mcp"
+    assert payload["server"]["type"] == "uv"
+    assert payload["tools_generated"] is False
+    assert len(payload["tools"]) == 37

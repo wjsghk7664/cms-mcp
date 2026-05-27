@@ -12,9 +12,15 @@ On another Mac, run:
 mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
-That one command clones or updates the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs both Codex and Claude Desktop MCP configs.
+That one command clones or updates the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, installs Codex and legacy Claude Desktop MCP configs, builds a Claude Desktop `.mcpb` bundle, and opens the Claude Desktop extension installer when Claude Desktop is installed.
 
-Then restart Codex and Claude Desktop, or open a new session.
+Then restart Codex. If the Claude Desktop install dialog did not open, run:
+
+```bash
+./scripts/install-claude-desktop-mcpb.sh prod
+```
+
+Approve the extension install dialog in Claude Desktop, then enable `Cashwalk CMS MCP` in the chat connector menu.
 
 ## Manual Steps
 
@@ -60,6 +66,7 @@ Run this from the project directory on the other device:
 ```bash
 cms-mcp codex-config --env prod --install
 cms-mcp claude-config --env prod --install --all-known
+./scripts/install-claude-desktop-mcpb.sh prod
 ```
 
 The first command writes or replaces the `[mcp_servers.cms_mcp]` block in:
@@ -75,6 +82,9 @@ The default path is:
 ```text
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
+
+The third command builds `dist/cms-mcp-prod.mcpb` and opens it in Claude
+Desktop's extension installer.
 
 To preview the block before writing it:
 

@@ -17,6 +17,16 @@ On a fresh Codex or Claude Desktop device, the one-command setup is:
 mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
+The setup command builds and opens the Claude Desktop extension installer when
+Claude Desktop is installed. To reopen it manually:
+
+```bash
+./scripts/install-claude-desktop-mcpb.sh prod
+```
+
+Claude Desktop will show an extension install dialog. Approve it, then enable
+`Cashwalk CMS MCP` from the chat connector menu.
+
 ## Auth
 
 Auth is client-managed. The MCP tools do not open browsers, export cookies, or call logout.
@@ -51,6 +61,7 @@ starting an MCP client:
 
 ```bash
 cms-mcp tools
+cms-mcp mcpb-manifest --env prod
 ```
 
 ## Tools

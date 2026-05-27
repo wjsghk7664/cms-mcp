@@ -20,6 +20,7 @@ from .config import load_config
 from .cookie_store import CookieStore
 from .errors import CmsMcpError, error_result
 from .logging import configure_logging
+from .mcpb_bundle import build_mcpb_manifest
 from .server import run_stdio
 from .smoke import run_smoke
 from .utils.redaction import redact
@@ -46,6 +47,8 @@ def main(argv: list[str] | None = None) -> int:
             return run_codex_config_command(args)
         if args.command == "claude-config":
             return run_claude_config_command(args)
+        if args.command == "mcpb-manifest":
+            return asyncio.run(run_mcpb_manifest_command(args))
     except CmsMcpError as exc:
         print_json(exc.to_tool_result())
         return 1
@@ -106,6 +109,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Install into the default Claude config and existing known Claude variants",
     )
     claude_config.add_argument("--install", action="store_true")
+
+    mcpb_manifest = subparsers.add_parser(
+        "mcpb-manifest",
+        help="Print or write a Claude Desktop MCPB manifest",
+    )
+    mcpb_manifest.add_argument("--env", choices=["prod", "test"], default=None)
+    mcpb_manifest.add_argument("--output", default=None)
 
     auth = subparsers.add_parser("auth", help="Manage local CMS auth state")
     auth_sub = auth.add_subparsers(dest="auth_command", required=True)
@@ -234,6 +244,31 @@ def run_claude_config_command(args: argparse.Namespace) -> int:
                 command=args.server_command,
             )
         )
+    return 0
+
+
+async def run_mcpb_manifest_command(args: argparse.Namespace) -> int:
+    from .server import mcp
+
+    config = load_config(getattr(args, "env", None))
+    tools = await mcp.list_tools()
+    manifest = build_mcpb_manifest(
+        config,
+        [
+            {
+                "name": tool.name,
+                "description": tool.description,
+            }
+            for tool in tools
+        ],
+    )
+    output = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
+    if args.output:
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(output, encoding="utf-8")
+    else:
+        print(output, end="", file=sys.stdout)
     return 0
 
 
