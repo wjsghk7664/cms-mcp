@@ -11,10 +11,10 @@ python -m pip install -e ".[dev]"
 python -m playwright install chromium
 ```
 
-On a fresh Codex device, after copying or cloning this project, the one-command setup is:
+On a fresh Codex device, the one-command setup is:
 
 ```bash
-./scripts/setup-codex.sh prod
+git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp && ./scripts/setup-codex.sh prod
 ```
 
 ## Auth

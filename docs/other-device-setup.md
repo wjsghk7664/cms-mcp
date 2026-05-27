@@ -6,13 +6,13 @@ Do not copy `.cms-mcp/cookies/*.json` or browser profiles between devices. Each 
 
 ## Short Version
 
-After copying or cloning this project on another Mac, run this from the project directory:
+On another Mac, run:
 
 ```bash
-./scripts/setup-codex.sh prod
+git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp && ./scripts/setup-codex.sh prod
 ```
 
-That one command creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs the Codex MCP config.
+That one command clones the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, and installs the Codex MCP config.
 
 Then restart Codex or open a new Codex session.
 
@@ -22,9 +22,10 @@ Use this only if the one-command setup fails.
 
 ## 1. Get The Project
 
-Clone or copy the project to the other device. Example path:
+Clone the project to the other device. Example:
 
 ```bash
+git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp
 cd ~/workspace/cms-mcp
 ```
 
