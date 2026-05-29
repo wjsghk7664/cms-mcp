@@ -1,6 +1,6 @@
 # Other Device Setup
 
-Use this when you want the same CMS MCP server in Codex and Claude Desktop on another Mac.
+Use this when you want the same CMS MCP server in Codex, Claude Code, and Claude Desktop on another Mac.
 
 Do not copy `.cms-mcp/cookies/*.json` or browser profiles between devices. Each device should complete its own CMS login.
 
@@ -12,9 +12,9 @@ On another Mac, run:
 mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
-That one command clones or updates the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, installs Codex and legacy Claude Desktop MCP configs, builds a Claude Desktop `.mcpb` bundle, and opens the Claude Desktop extension installer when Claude Desktop is installed.
+That one command clones or updates the project, creates `.venv`, installs the package, installs Playwright Chromium, opens CMS login, validates auth, runs a basic smoke check, installs Codex and Claude Code MCP configs, installs legacy Claude Desktop MCP configs, builds a Claude Desktop `.mcpb` bundle, and opens the Claude Desktop extension installer when Claude Desktop is installed.
 
-Then restart Codex. If the Claude Desktop install dialog did not open, run:
+Then restart Codex and Claude Code, or open new sessions. If the Claude Desktop install dialog did not open, run:
 
 ```bash
 ./scripts/install-claude-desktop-mcpb.sh prod
@@ -65,6 +65,7 @@ Run this from the project directory on the other device:
 
 ```bash
 cms-mcp codex-config --env prod --install
+./scripts/install-claude-code.sh prod
 cms-mcp claude-config --env prod --install --all-known
 ./scripts/install-claude-desktop-mcpb.sh prod
 ```
@@ -75,7 +76,14 @@ The first command writes or replaces the `[mcp_servers.cms_mcp]` block in:
 ~/.codex/config.toml
 ```
 
-The second command writes or replaces the `mcpServers.cms_mcp` entry in the
+The second command writes or replaces the `cms_mcp` entry in Claude Code's
+user config:
+
+```text
+~/.claude.json
+```
+
+The third command writes or replaces the `mcpServers.cms_mcp` entry in the
 default Claude Desktop config and any existing known Claude variant config.
 The default path is:
 
@@ -83,7 +91,7 @@ The default path is:
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
-The third command builds `dist/cms-mcp-prod.mcpb` and opens it in Claude
+The fourth command builds `dist/cms-mcp-prod.mcpb` and opens it in Claude
 Desktop's extension installer.
 
 To preview the block before writing it:
@@ -95,7 +103,7 @@ cms-mcp claude-config --env prod
 
 ## 5. Restart Apps
 
-Restart Codex and Claude Desktop. Then ask:
+Restart Codex, Claude Code, and Claude Desktop. Then ask:
 
 ```text
 cms_mcp로 cms_health 확인해줘

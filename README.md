@@ -11,14 +11,21 @@ python -m pip install -e ".[dev]"
 python -m playwright install chromium
 ```
 
-On a fresh Codex or Claude Desktop device, the one-command setup is:
+On a fresh Codex, Claude Code, or Claude Desktop device, the one-command setup is:
 
 ```bash
 mkdir -p ~/workspace && if [ -d ~/workspace/cms-mcp/.git ]; then cd ~/workspace/cms-mcp && git pull; else git clone https://github.com/wjsghk7664/cms-mcp.git ~/workspace/cms-mcp && cd ~/workspace/cms-mcp; fi && ./scripts/setup-codex.sh prod
 ```
 
-The setup command builds and opens the Claude Desktop extension installer when
-Claude Desktop is installed. To reopen it manually:
+The setup command installs Codex and Claude Code MCP config, then builds and
+opens the Claude Desktop extension installer when Claude Desktop is installed.
+To refresh Claude Code manually:
+
+```bash
+./scripts/install-claude-code.sh prod
+```
+
+To reopen the Claude Desktop installer manually:
 
 ```bash
 ./scripts/install-claude-desktop-mcpb.sh prod
@@ -126,4 +133,4 @@ python -m pytest
 
 More operational detail is in [docs/runbook.md](docs/runbook.md).
 
-Setup on another Codex device is covered in [docs/other-device-setup.md](docs/other-device-setup.md).
+Setup on another Codex, Claude Code, or Claude Desktop device is covered in [docs/other-device-setup.md](docs/other-device-setup.md).

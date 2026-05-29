@@ -40,6 +40,9 @@ cms-mcp smoke --env "${ENVIRONMENT}" --target basic
 echo "[cms-mcp] installing Codex MCP config"
 cms-mcp codex-config --env "${ENVIRONMENT}" --install
 
+echo "[cms-mcp] installing Claude Code MCP config"
+./scripts/install-claude-code.sh "${ENVIRONMENT}"
+
 echo "[cms-mcp] installing Claude Desktop MCP config"
 cms-mcp claude-config --env "${ENVIRONMENT}" --install --all-known
 
@@ -57,5 +60,5 @@ else
   echo "[cms-mcp] Claude Desktop not found at /Applications/Claude.app; skipping MCPB installer open"
 fi
 
-echo "[cms-mcp] done. Restart Codex, or open a new session."
+echo "[cms-mcp] done. Restart Codex and Claude Code, or open a new session."
 echo "[cms-mcp] For Claude Desktop, enable Cashwalk CMS MCP in the chat connector menu after approving the extension install."
