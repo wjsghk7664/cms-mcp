@@ -77,7 +77,8 @@ DOMAIN_USAGE_GUIDANCE = (
     "such as 한국캐시워크, treat that name as an app/publisher filter, not as a "
     "project/business-category filter. Prefer app_name/publisher_name or "
     "publisher_id/app_id. Use project_code only for CMS project/business category "
-    "codes such as CASHWALK, CASHDOC, or TIMESPREAD."
+    "codes such as CASHWALK, CASHDOC, or TIMESPREAD. In CMS app/publisher labels, "
+    "한국캐시워크 is usually represented as 캐시워크."
 )
 
 mcp = FastMCP(
@@ -158,7 +159,7 @@ async def cms_list_inventories(
     tenant_code: str | None = None,
     search_value: str | None = None,
 ) -> dict[str, Any]:
-    """Read inventory rows. For repo/app names like 한국캐시워크, use app_name, not project_code."""
+    """Read inventory rows. For 한국캐시워크, use app_name; CMS normalizes it to 캐시워크."""
     return await tool_result(
         lambda: _cms_list_inventories(
             _config(env),
@@ -188,7 +189,7 @@ async def cms_find_inventory(
     location: str | None = None,
     page_size: int = 10000,
 ) -> dict[str, Any]:
-    """Find inventory rows. For repository/app lookups, pass app_name instead of project_code."""
+    """Find inventory rows. For 한국캐시워크, pass app_name instead of project_code."""
     return await tool_result(
         lambda: _cms_find_inventory(
             _config(env),

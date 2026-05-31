@@ -35,7 +35,7 @@ def build_mcpb_manifest(
             "opens a local login browser when the saved session expires, and does "
             "not create, update, delete, or log out CMS data. Repository/app names "
             "should be queried through app/publisher filters rather than project "
-            "filters."
+            "filters, and 한국캐시워크 is represented as 캐시워크 in CMS app labels."
         ),
         "author": {"name": "Cashwalk Ads"},
         "server": {

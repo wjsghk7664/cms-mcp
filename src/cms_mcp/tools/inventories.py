@@ -7,6 +7,10 @@ from cms_mcp.client import CmsClient
 from cms_mcp.config import CmsMcpConfig
 from cms_mcp.endpoints import build_path, compact_query
 
+APP_NAME_ALIASES = {
+    "한국캐시워크": "캐시워크",
+}
+
 
 async def cms_list_inventories(
     config: CmsMcpConfig,
@@ -29,7 +33,7 @@ async def cms_list_inventories(
             "projectCode": project_code,
             "platform": platform,
             "os": os,
-            "publisherName": publisher_name or app_name,
+            "publisherName": normalize_app_name(publisher_name or app_name),
             "positionId": position_id,
             "tenantCode": tenant_code,
             "searchValue": search_value,
@@ -131,3 +135,10 @@ def _extract_rows(data: Any) -> list[Any] | None:
             if isinstance(value, list):
                 return value
     return None
+
+
+def normalize_app_name(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    return APP_NAME_ALIASES.get(normalized, normalized)

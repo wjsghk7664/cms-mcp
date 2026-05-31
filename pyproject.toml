@@ -1,6 +1,6 @@
 [project]
 name = "cms-mcp"
-version = "0.1.3"
+version = "0.1.4"
 description = "Read-only MCP server for the internal ad CMS"
 readme = "README.md"
 requires-python = ">=3.12"
