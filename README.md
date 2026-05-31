@@ -73,6 +73,13 @@ cms-mcp serve --env prod
 
 The server uses stdio for MCP transport and only calls read-only CMS APIs.
 
+## Query Guidance
+
+For repository or app-scoped questions, treat the requested service name as a
+CMS app/publisher filter, not as a project/business-category filter. For
+example, to find 한국캐시워크-related inventory, use `app_name="한국캐시워크"`
+or a publisher/app id from `cms_report_metadata`, not `project_code`.
+
 To inspect the registered tool names, descriptions, and input schemas without
 starting an MCP client:
 

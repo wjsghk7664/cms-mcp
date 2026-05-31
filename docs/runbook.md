@@ -69,6 +69,13 @@ complete, and then the original read continues. To turn that behavior off:
 CMS_MCP_AUTO_LOGIN=false cms-mcp serve --env prod
 ```
 
+## Query Guidance
+
+Repository/app names map to the CMS app/publisher dimension. Do not use
+`project_code` for names such as 한국캐시워크. Use `app_name` on inventory tools,
+or get the app/publisher id from `cms_report_metadata` and pass it as
+`publisher_id`/`app_id` for unit or report queries.
+
 The server uses stdio. stdout is reserved for MCP JSON-RPC messages; operational output should stay out of stdout.
 
 ## MCP Client Command

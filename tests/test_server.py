@@ -40,6 +40,16 @@ async def test_server_registers_readonly_tools() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tool_descriptions_guide_repo_queries_to_app_filters() -> None:
+    tools = {tool.name: tool for tool in await mcp.list_tools()}
+
+    assert "app_name" in tools["cms_find_inventory"].inputSchema["properties"]
+    assert "app_id" in tools["cms_search_units"].inputSchema["properties"]
+    assert "app_name" in tools["cms_list_inventories"].description
+    assert "app_id" in tools["cms_search_units"].description
+
+
+@pytest.mark.asyncio
 async def test_health_tool_handles_missing_cookie(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

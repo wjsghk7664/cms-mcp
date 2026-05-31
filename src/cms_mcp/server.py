@@ -72,13 +72,22 @@ from .tools.units import cms_search_units as _cms_search_units
 from .tools.users import cms_get_user_default_settings as _cms_get_user_default_settings
 from .tools.users import cms_list_users as _cms_list_users
 
+DOMAIN_USAGE_GUIDANCE = (
+    "Domain guidance: when the user asks about a repository, codebase, or app "
+    "such as 한국캐시워크, treat that name as an app/publisher filter, not as a "
+    "project/business-category filter. Prefer app_name/publisher_name or "
+    "publisher_id/app_id. Use project_code only for CMS project/business category "
+    "codes such as CASHWALK, CASHDOC, or TIMESPREAD."
+)
+
 mcp = FastMCP(
     "Internal CMS Read-Only",
     instructions=(
         "Read-only tools for the internal ad CMS. "
         "This server never creates, updates, deletes, or logs out. "
         "If the saved session is expired, it can open the local CMS login browser "
-        "before continuing a read."
+        "before continuing a read. "
+        + DOMAIN_USAGE_GUIDANCE
     ),
 )
 
@@ -125,7 +134,7 @@ async def cms_get_user_default_settings(env: str | None = None) -> dict[str, Any
 
 @mcp.tool()
 async def cms_dimensions(env: str | None = None, target: str = "all") -> dict[str, Any]:
-    """Read CMS dimensions such as projects, OS, screens, locations, tenants, and SSPs."""
+    """Read CMS dimensions. Use publishers/apps metadata for app filters; project means business category."""
     return await tool_result(lambda: _cms_dimensions(_config(env), target=target))
 
 
@@ -144,11 +153,12 @@ async def cms_list_inventories(
     platform: str | None = None,
     os: str | None = None,
     publisher_name: str | None = None,
+    app_name: str | None = None,
     position_id: str | None = None,
     tenant_code: str | None = None,
     search_value: str | None = None,
 ) -> dict[str, Any]:
-    """Read inventory rows with CMS filters."""
+    """Read inventory rows. For repo/app names like 한국캐시워크, use app_name, not project_code."""
     return await tool_result(
         lambda: _cms_list_inventories(
             _config(env),
@@ -158,6 +168,7 @@ async def cms_list_inventories(
             platform=platform,
             os=os,
             publisher_name=publisher_name,
+            app_name=app_name,
             position_id=position_id,
             tenant_code=tenant_code,
             search_value=search_value,
@@ -170,18 +181,20 @@ async def cms_find_inventory(
     env: str | None = None,
     inventory_id: str | None = None,
     project_code: str | None = None,
+    app_name: str | None = None,
     platform: str | None = None,
     os: str | None = None,
     screen: str | None = None,
     location: str | None = None,
     page_size: int = 10000,
 ) -> dict[str, Any]:
-    """Find inventory rows by inventory id and optional dimensions."""
+    """Find inventory rows. For repository/app lookups, pass app_name instead of project_code."""
     return await tool_result(
         lambda: _cms_find_inventory(
             _config(env),
             inventory_id=inventory_id,
             project_code=project_code,
+            app_name=app_name,
             platform=platform,
             os=os,
             screen=screen,
@@ -280,13 +293,14 @@ async def cms_search_units(
     page_size: int = 50,
     project_code: str | None = None,
     publisher_id: str | None = None,
+    app_id: str | None = None,
     os: str | None = None,
     position_id: str | None = None,
     tenant_code: str | None = None,
     search_type: str | None = None,
     search_value: str | None = None,
 ) -> dict[str, Any]:
-    """Search units using the CMS read-only unit search endpoint."""
+    """Search units. For repo/app lookups, use app_id/publisher_id from cms_report_metadata, not project_code."""
     return await tool_result(
         lambda: _cms_search_units(
             _config(env),
@@ -294,6 +308,7 @@ async def cms_search_units(
             page_size=page_size,
             project_code=project_code,
             publisher_id=publisher_id,
+            app_id=app_id,
             os=os,
             position_id=position_id,
             tenant_code=tenant_code,
@@ -630,7 +645,7 @@ async def cms_report_metadata(
     env: str | None = None,
     business_category_id: str | None = None,
 ) -> dict[str, Any]:
-    """Read report filter metadata: business categories, publishers, and optionally positions."""
+    """Read report metadata. `publishers` are the CMS app filter; use them for repo/app names."""
     return await tool_result(
         lambda: _cms_report_metadata(
             _config(env),

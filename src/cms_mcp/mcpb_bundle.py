@@ -33,7 +33,9 @@ def build_mcpb_manifest(
             "Provides read-only access to the internal ad CMS from Claude Desktop. "
             "The extension runs locally, uses the CMS cookies saved on this device, "
             "opens a local login browser when the saved session expires, and does "
-            "not create, update, delete, or log out CMS data."
+            "not create, update, delete, or log out CMS data. Repository/app names "
+            "should be queried through app/publisher filters rather than project "
+            "filters."
         ),
         "author": {"name": "Cashwalk Ads"},
         "server": {
